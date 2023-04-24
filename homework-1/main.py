@@ -21,12 +21,12 @@ with psycopg2.connect(**params) as conn:
 
         # заполнение данными таблицы employees_data
         employees = open_csv_file('../homework-1/north_data/employees_data.csv')
-        counter = 1
+
         for employee in employees:
-            cur.execute('INSERT INTO employees_data VALUES (%s, %s, %s, %s, %s, %s)',
-                        (counter, employee['first_name'], employee['last_name'], employee['title'],
+            cur.execute('INSERT INTO employees_data (first_name, last_name, title, birth_date, notes)'
+                        ' VALUES (%s, %s, %s, %s, %s)',
+                        (employee['first_name'], employee['last_name'], employee['title'],
                          employee['birth_date'], employee['notes']))
-            counter += 1
 
         # заполнение данными таблицы customers_data
         customers = open_csv_file('../homework-1/north_data/customers_data.csv')
