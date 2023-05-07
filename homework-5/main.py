@@ -42,10 +42,26 @@ def main():
 
 def create_database(params, db_name) -> None:
     """Создает новую базу данных."""
-    pass
+    conn = psycopg2.connect(**params)
+    conn.autocommit = True
+    cur = conn.cursor()
+
+    # Перехватываем ошибку если базы данных с таким именем не существует
+    try:
+        cur.execute(f'DROP DATABASE {db_name}')
+    except psycopg2.errors.InvalidCatalogName:
+        pass
+
+    cur.execute(f'CREATE DATABASE {db_name}')
+
+    cur.close()
+    conn.close()
+
 
 def execute_sql_script(cur, script_file) -> None:
     """Выполняет скрипт из файла для заполнения БД данными."""
+    with open(script_file, 'r', encoding='UTF-8') as execute_sql_file:
+        execute_sql_file = execute_sql_file.read()
 
 
 
@@ -70,4 +86,7 @@ def add_foreign_keys(cur, json_file) -> None:
 
 
 if __name__ == '__main__':
-    main()
+    db_name = 'my_new_db'
+    params = config()
+    create_database(params, db_name)
+    # main()
