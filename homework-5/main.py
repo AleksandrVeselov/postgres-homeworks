@@ -66,8 +66,17 @@ def execute_sql_script(cur, script_file) -> None:
 
 
 def create_suppliers_table(cur) -> None:
-    """Создает таблицу suppliers."""
-    pass
+    """Создает таблицу suppliers"""
+    cur.execute('CREATE TABLE suppliers ('
+                'supplier_id serial primary key, '
+                'company_name varchar(50), '
+                'contact varchar(50), '
+                'address varchar(50), '
+                'phone varchar(50), '
+                'fax varchar(50), '
+                'homepage varchar(50), '
+                'products varchar(50))')
+
 
 
 def get_suppliers_data(json_file: str) -> list[dict]:
@@ -97,6 +106,8 @@ if __name__ == '__main__':
             with conn.cursor() as cur:
                 execute_sql_script(cur, script_file)
                 print(f"БД {db_name} успешно заполнена")
+                create_suppliers_table(cur)
+                print("Таблица suppliers успешно создана")
     except Exception as e:
         print(e)
     finally:
