@@ -46,13 +46,12 @@ def create_database(params, db_name) -> None:
     conn.autocommit = True
     cur = conn.cursor()
 
-    # Перехватываем ошибку если базы данных с таким именем не существует
     try:
-        cur.execute(f'DROP DATABASE {db_name}')
+        cur.execute(f'DROP DATABASE {db_name}')  # Пробуем удалить базу данных
     except psycopg2.errors.InvalidCatalogName:
-        pass
+        pass  # Перехватываем ошибку если базы данных с таким именем не существует
 
-    cur.execute(f'CREATE DATABASE {db_name}')
+    cur.execute(f'CREATE DATABASE {db_name}')  # Создание базы данных
 
     cur.close()
     conn.close()
@@ -60,9 +59,10 @@ def create_database(params, db_name) -> None:
 
 def execute_sql_script(cur, script_file) -> None:
     """Выполняет скрипт из файла для заполнения БД данными."""
-    with open(script_file, 'r', encoding='UTF-8') as execute_sql_file:
-        execute_sql_file = execute_sql_file.read()
 
+    with open(script_file, 'r', encoding='UTF-8') as execute_sql_file:
+        sql_script = execute_sql_file.read()
+        cur.execute(sql_script)
 
 
 def create_suppliers_table(cur) -> None:
@@ -88,5 +88,18 @@ def add_foreign_keys(cur, json_file) -> None:
 if __name__ == '__main__':
     db_name = 'my_new_db'
     params = config()
+    script_file = 'fill_db.sql'
+    conn = None
     create_database(params, db_name)
+    params.update({'dbname': db_name})
+    try:
+        with psycopg2.connect(**params) as conn:
+            with conn.cursor() as cur:
+                execute_sql_script(cur, script_file)
+                print(f"БД {db_name} успешно заполнена")
+    except Exception as e:
+        print(e)
+    finally:
+        if conn is not None:
+            conn.close()
     # main()
