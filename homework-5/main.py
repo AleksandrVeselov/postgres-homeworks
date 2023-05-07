@@ -78,10 +78,11 @@ def create_suppliers_table(cur) -> None:
                 'products varchar(50))')
 
 
-
 def get_suppliers_data(json_file: str) -> list[dict]:
     """Извлекает данные о поставщиках из JSON-файла и возвращает список словарей с соответствующей информацией."""
-    pass
+    with open(json_file, 'r', encoding='UTF-8') as file:
+        json_dict = json.load(file)
+        return json_dict
 
 
 def insert_suppliers_data(cur, suppliers: list[dict]) -> None:
